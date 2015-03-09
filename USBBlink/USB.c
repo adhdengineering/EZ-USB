@@ -65,7 +65,6 @@ void InitUSB()
 void PollUSB()
 {
 	WORD i;
-	WORD count;
     // Check for pending SETUP
     if(SetupDataAvailable)
     {
@@ -80,6 +79,8 @@ void PollUSB()
 	{
 		SetLEDState(0, EP1OUTBUF[0]);
 		SetLEDState(1, EP1OUTBUF[1]);
+		SetLEDState(2, EP1OUTBUF[2]);
+		SetLEDState(3, EP1OUTBUF[3]);
 
 		for (i = 0; i < EP1OUTBC; i++)
 		{
