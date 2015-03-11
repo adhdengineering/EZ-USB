@@ -82,9 +82,7 @@
 // Synchronization Delay formula: see TRM section 15-14
 #define _SCYCL ( 3*(_CFREQ) + 5*(_IFREQ) - 1 ) / ( 2*(_IFREQ) )
 
-#define Nop __asm\
-			nop\
-			__endasm
+#define Nop __asm__("nop");
 
 #if( _SCYCL == 1 )
 #define SYNCDELAY Nop
