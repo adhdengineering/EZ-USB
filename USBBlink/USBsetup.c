@@ -162,7 +162,7 @@ void SetupCommand(void)
                   SUDPTRL = LSB(pOtherConfigDscr);
                   break;
                case GD_STRING:            // String
-                  if(dscr_ptr = (void *)GetStringDescriptor(SETUPDAT[2]))
+                  if( (dscr_ptr = (void *)GetStringDescriptor(SETUPDAT[2])) != 0)
                   {
                      SUDPTRH = MSB(dscr_ptr);
                      SUDPTRL = LSB(dscr_ptr);
