@@ -1,4 +1,3 @@
-
 #include "Fx2.h"
 #include "fx2regs.h"
 #include "syncdly.h"            // SYNCDELAY macro

@@ -1,16 +1,3 @@
-;;-----------------------------------------------------------------------------
-;;   File:      dscr.asm
-;;   Contents:  This file contains descriptor data tables.
-;;
-;;
-;; $Date: 15/11/13 8:51p $
-;; $Revision: 3 $
-;;
-;;
-;;-----------------------------------------------------------------------------
-;; Copyright 2003, Cypress Semiconductor Corporation
-;;-----------------------------------------------------------------------------;;-----------------------------------------------------------------------------
-
 DSCR_DEVICE   =   1   ;; Descriptor type: Device
 DSCR_CONFIG   =   2   ;; Descriptor type: Configuration
 DSCR_STRING   =   3   ;; Descriptor type: String

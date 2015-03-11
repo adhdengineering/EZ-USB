@@ -1,15 +1,3 @@
-//-----------------------------------------------------------------------------
-//   File:      fw.c
-//   Contents:  Firmware frameworks task dispatcher and device request parser
-//
-// 
-// $Date: 15/11/13 2:53p $
-// $Revision: 8 $
-//
-//
-//-----------------------------------------------------------------------------
-// Copyright (c) 2011, Cypress Semiconductor Corporation All rights reserved
-//-----------------------------------------------------------------------------
 #include "Fx2.h"
 #include "fx2regs.h"
 #include "syncdly.h"            // SYNCDELAY macro
