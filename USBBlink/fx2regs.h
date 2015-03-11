@@ -12,7 +12,7 @@
 
 #ifndef FX2REGS_H   /* Header Sentry */
 #define FX2REGS_H
-
+#include "cdt_parser_fix.h"
 //-----------------------------------------------------------------------------
 // FX2/FX2LP/FX1 Related Register Assignments
 //-----------------------------------------------------------------------------
