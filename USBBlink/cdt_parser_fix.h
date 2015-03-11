@@ -8,4 +8,6 @@
 #define __code
 #define __sfr int
 #define __sbit int
+#define __interrupt(x)
+#define __bit int
 #endif
