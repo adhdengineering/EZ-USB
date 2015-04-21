@@ -1,5 +1,5 @@
 /// This file is purely to stop the CDT parser throwing up a fuckton of errors when it meets the SDCC
-/// compiler. This file should not affect the build since __CDT_PARSER__ isnt defined.
+/// compiler. This file should not affect the build since __CDT_PARSER__ isn't defined.
 
 #ifdef __CDT_PARSER__
 #define __crticial
