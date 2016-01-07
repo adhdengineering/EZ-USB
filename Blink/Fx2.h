@@ -11,7 +11,8 @@
  //-----------------------------------------------------------------------------
  #ifndef FX2_H     //Header sentry
  #define FX2_H
- 
+ #include "cdt_parser_fix.h"
+
  #define INTERNAL_DSCR_ADDR 0x0080   // Relocate Descriptors to 0x80
  #define bmSTRETCH 0x07
  #define FW_STRETCH_VALUE 0x0      // Set stretch to 0 in frameworks
