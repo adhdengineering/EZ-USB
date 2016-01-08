@@ -218,7 +218,8 @@ const STRINGDSCR __xdata* StringTable[] =
 	(STRINGDSCR __xdata*)&Product,
 };
 #endif
-STRINGDSCR __xdata *GetStringDescriptorEx(BYTE StrIdx)
+
+void* GetStringDescriptorEx(BYTE StrIdx)
 {
 #ifdef USE_ARRAY_FOR_STRING_TABLE
 	const int temp = sizeof(StringTable) / sizeof(STRINGDSCR __xdata *);
@@ -228,11 +229,11 @@ STRINGDSCR __xdata *GetStringDescriptorEx(BYTE StrIdx)
 	switch (StrIdx)
 	{
 	case 0:
-		return (STRINGDSCR __xdata *)&LanguageID.StringDesciptor;
+		return (void*)&LanguageID.StringDesciptor;
 	case 1:
-		return (STRINGDSCR __xdata *)&Manufacturer.StringDesciptor;
+		return (void*)&Manufacturer.StringDesciptor;
 	case 2:
-		return (STRINGDSCR __xdata *)&Product.StringDesciptor;
+		return (void*)&Product.StringDesciptor;
 	}
 	return (void*)0;
 #endif

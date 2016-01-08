@@ -2,6 +2,8 @@
 #include "fx2regs.h"
 #include "syncdly.h"            // SYNCDELAY macro
 
+#include "USBDescriptors.h"
+
 BOOL Rwuen;
 BOOL Selfpwr;
 
@@ -24,22 +26,6 @@ const char __code  EPCS_Offset_Lookup_Table[] =
 };
 // macro for generating the address of an endpoint's control and status register (EPnCS)
 #define epcs(EP) (EPCS_Offset_Lookup_Table[(EP & 0x7E) | (EP > 128)] + 0xE6A1)
-/*
-STRINGDSCR __xdata *GetStringDescriptor(BYTE StrIdx)
-{
-	STRINGDSCR __xdata *dscr = (STRINGDSCR __xdata *) pStringDscr;
-
-	while(dscr->type == STRING_DSCR)
-	{
-		if(!StrIdx--)
-			return(dscr);
-		dscr = (STRINGDSCR __xdata *)((WORD)dscr + dscr->length);
-	}
-
-	return (void*)0;
-}*/
-
-extern STRINGDSCR __xdata *GetStringDescriptorEx(BYTE StrIdx);
 
 BYTE Configuration; // Current configuration
 BYTE AlternateSetting; // Alternate settings
@@ -163,7 +149,7 @@ void SetupCommand(void)
                   SUDPTRL = LSB(pOtherConfigDscr);
                   break;
                case GD_STRING:            // String
-                  if( (dscr_ptr = (void*)GetStringDescriptorEx(SETUPDAT[2])) != 0)
+                  if( (dscr_ptr = GetStringDescriptorEx(SETUPDAT[2])) != 0)
                   {
                      SUDPTRH = MSB(dscr_ptr);
                      SUDPTRL = LSB(dscr_ptr);
