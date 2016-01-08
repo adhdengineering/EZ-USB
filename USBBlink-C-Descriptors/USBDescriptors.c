@@ -47,6 +47,7 @@ typedef struct
 #define LanguageID_Addr MAKE_EVEN_ALIGNED_START(FullSpeedConfigDscr_Addr, CONFIGANDINTERFACEDSCR)
 #define Manufacturer_Addr (LanguageID_Addr + MAKE_STRINGDSCR_LEN("a"))
 #define Product_Addr (Manufacturer_Addr + MAKE_STRINGDSCR_LEN("Cypress"))
+#define SerialNo_Addr (Product_Addr + MAKE_STRINGDSCR_LEN("EZ-USB"))
 
 
 const DEVICEDSCR __at(DeviceDscr_Addr) DeviceDscr =
@@ -64,7 +65,7 @@ const DEVICEDSCR __at(DeviceDscr_Addr) DeviceDscr =
 		.version_id = 0x0000, //Product version ID
 		.mfg_str = 1, // Manufacturer string index
 		.prod_str = 2, // Product string index
-		.serialnum_str = 0, // Serial number string index
+		.serialnum_str = 3, // Serial number string index
 		.configs = 1, // Number of configurations
 };
 
@@ -209,13 +210,29 @@ const STRING __at(Product_Addr) Product =
 	.strData = { 'E', 'Z', '-', 'U', 'S', 'B' },
 };
 
+const STRING __at(SerialNo_Addr) SerialNo =
+{
+	.StringDesciptor =
+	{
+		.length = MAKE_STRINGDSCR_LEN("12345"),
+		.type = DSCR_STRING,
+	},
+	.strData = { '1', '2', '3', '4', '5' },
+};
+
+// if there are more string descriptors then i can be more efficient in terms of
+// the overall size of the resultant hex file to uncomment the following line
+// after updating the StringTable array.
 //#define USE_ARRAY_FOR_STRING_TABLE
+
+
 #ifdef USE_ARRAY_FOR_STRING_TABLE
 const STRINGDSCR __xdata* StringTable[] =
 {
 	(STRINGDSCR __xdata*)&LanguageID,
 	(STRINGDSCR __xdata*)&Manufacturer,
 	(STRINGDSCR __xdata*)&Product,
+	(STRINGDSCR __xdata*)&SerialNo,
 };
 #endif
 
@@ -234,6 +251,8 @@ void* GetStringDescriptorEx(BYTE StrIdx)
 		return (void*)&Manufacturer.StringDesciptor;
 	case 2:
 		return (void*)&Product.StringDesciptor;
+	case 3:
+		return (void*)&SerialNo.StringDesciptor;
 	}
 	return (void*)0;
 #endif
