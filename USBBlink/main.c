@@ -92,3 +92,9 @@ void main(void)
 	      }
 	}
 }
+
+// Wake-up interrupt handler
+void resume_isr(void) __interrupt(WKUP_VECT)
+{
+   EZUSB_CLEAR_RSMIRQ();
+}

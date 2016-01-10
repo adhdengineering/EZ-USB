@@ -27,6 +27,9 @@ extern __code STRINGDSCR        StringDscr;
 void InitUSB()
 {
 	SetupDataAvailable = FALSE;
+	Rwuen = FALSE;
+	Selfpwr = FALSE;
+
 	// set the CPU clock to 48MHz
 	CPUCS = ((CPUCS & ~bmCLKSPD) | bmCLKSPD1);
 
