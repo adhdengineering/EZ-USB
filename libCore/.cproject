@@ -21,7 +21,7 @@
 							<tool command="sdcc -c --std-c99 " id="cdt.managedbuild.tool.sdcc.c.compiler.exe.release.19436806" name="SDCC Compiler" superClass="cdt.managedbuild.tool.sdcc.c.compiler.exe.release">
 								<inputType id="cdt.managedbuild.tool.sdcc.c.compiler.input.377826271" superClass="cdt.managedbuild.tool.sdcc.c.compiler.input"/>
 							</tool>
-							<tool command="sdar -rc" commandLinePattern="${COMMAND} ${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.sdcc.c.linker.exe.release.2005868006" name="SDCC Linker" superClass="cdt.managedbuild.tool.sdcc.c.linker.exe.release">
+							<tool command="sdcclib" commandLinePattern="${COMMAND} ${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.sdcc.c.linker.exe.release.2005868006" name="SDCC Linker" superClass="cdt.managedbuild.tool.sdcc.c.linker.exe.release">
 								<inputType id="cdt.managedbuild.tool.sdcc.c.linker.input.900439213" superClass="cdt.managedbuild.tool.sdcc.c.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_RELS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
