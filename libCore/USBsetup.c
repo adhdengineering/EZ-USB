@@ -4,8 +4,8 @@
 
 #include "USBDescriptors.h"
 
-BOOL Rwuen;
-BOOL Selfpwr;
+extern BOOL Rwuen;
+extern BOOL Selfpwr;
 
 #define VR_NAKALL_ON    0xD0
 #define VR_NAKALL_OFF   0xD1

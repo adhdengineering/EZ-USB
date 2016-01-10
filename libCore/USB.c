@@ -15,6 +15,10 @@ WORD   pConfigDscr;
 WORD   pOtherConfigDscr;
 WORD   pStringDscr;
 
+BOOL Rwuen;
+BOOL Selfpwr;
+
+
 extern __code DEVICEDSCR        DeviceDscr;
 extern __code DEVICEQUALDSCR    DeviceQualDscr;
 extern __code CONFIGDSCR        HighSpeedConfigDscr;
@@ -27,6 +31,9 @@ void EZUSB_Discon(BOOL renum);
 void InitUSB()
 {
 	SetupDataAvailable = FALSE;
+	Rwuen = FALSE;
+	Selfpwr = FALSE;
+
 	// set the CPU clock to 48MHz
 	CPUCS = ((CPUCS & ~bmCLKSPD) | bmCLKSPD1);
 
@@ -68,6 +75,8 @@ void InitUSB()
    EP1OUTBC = 0;
 }
 
+extern void ProcessEP1Out();
+
 void PollUSB()
 {
     // Check for pending SETUP
@@ -82,20 +91,7 @@ void PollUSB()
     // we need to write to EP1OUTBC to flag the buffer as done and transfer ownership back to the SIE
 	if (!(EP1OUTCS & bmEPBUSY))
 	{
-		WORD i;
-		/*
-		SetLEDState(0, EP1OUTBUF[0]);
-		SetLEDState(1, EP1OUTBUF[1]);
-		SetLEDState(2, EP1OUTBUF[2]);
-		SetLEDState(3, EP1OUTBUF[3]);
-		*/
-		for (i = 0; i < EP1OUTBC; i++)
-		{
-			EP1INBUF[i] = ~EP1OUTBUF[i];
-		}
-		EP1INBC = EP1OUTBC;
-		EP1OUTBC = 0; // rearm the endpoint out buffer
-
+		ProcessEP1Out();
 	}
 
 /*

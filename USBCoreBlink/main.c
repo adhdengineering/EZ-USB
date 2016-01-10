@@ -9,18 +9,24 @@
 
 #include "LEDs.h"
 
+void ProcessEP1Out()
+{
+	WORD i;
 
-/*
-//-----------------------------------------------------------------------------
-// Constants
-//-----------------------------------------------------------------------------
-#define DELAY_COUNT   0x9248*8L  // Delay for 8 sec at 24Mhz, 4 sec at 48
-#define _IFREQ  48000            // IFCLK constant for Synchronization Delay
-#define _CFREQ  48000            // CLKOUT constant for Synchronization Delay
+	SetLEDState(0, EP1OUTBUF[0]);
+	SetLEDState(1, EP1OUTBUF[1]);
+	SetLEDState(2, EP1OUTBUF[2]);
+	SetLEDState(3, EP1OUTBUF[3]);
 
-extern void Setup();
-extern void Loop();
-*/
+	for (i = 0; i < EP1OUTBC; i++)
+	{
+		EP1INBUF[i] = ~EP1OUTBUF[i];
+	}
+	EP1INBC = EP1OUTBC;
+	EP1OUTBC = 0; // rearm the endpoint out buffer
+
+}
+
 BOOL TD_Suspend(void) // Called before the device goes into suspend mode
 {
 	return (TRUE);
@@ -31,7 +37,9 @@ BOOL TD_Resume(void) // Called after the device resumes
 	return (TRUE);
 }
 
-// Task dispatcher
+// I'd like to move main into the core library, but it has to remain in the target project
+// for now. I can't get the linker to include it in the output if it's in the library.
+// Same as the USBJumpTable.asm file.
 void main(void)
 {
 	InitUSB();
@@ -64,4 +72,10 @@ void main(void)
 			}
 		}
 	}
+}
+
+// Wake-up interrupt handler
+void resume_isr(void) __interrupt(WKUP_VECT)
+{
+   EZUSB_CLEAR_RSMIRQ();
 }
