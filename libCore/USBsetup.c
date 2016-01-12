@@ -26,9 +26,6 @@ const char __code  EPCS_Offset_Lookup_Table[] =
 // macro for generating the address of an endpoint's control and status register (EPnCS)
 #define epcs(EP) (EPCS_Offset_Lookup_Table[(EP & 0x7E) | (EP > 128)] + 0xE6A1)
 
-extern BYTE Configuration; // Current configuration
-extern BYTE AlternateSetting; // Alternate settings
-
 #define SAVE_A_FEW_BYTES
 
 #ifdef SAVE_A_FEW_BYTES
