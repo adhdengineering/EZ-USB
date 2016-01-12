@@ -5,8 +5,8 @@
  *      Author: c.greer
  */
 
-#include "Fx2.h"
-#include "USBDescriptors.h"
+#include <Fx2.h>
+#include <USBDescriptors.h>
 
 #define DSCR_DEVICE  1
 #define DSCR_CONFIG  2
@@ -237,7 +237,7 @@ const STRINGDSCR __xdata* StringTable[] =
 };
 #endif
 
-void* GetStringDescriptorEx(BYTE StrIdx)
+void* GetStringDescriptor(BYTE StrIdx)
 {
 #ifdef USE_ARRAY_FOR_STRING_TABLE
 	const int temp = sizeof(StringTable) / sizeof(STRINGDSCR __xdata *);

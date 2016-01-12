@@ -7,8 +7,7 @@
 extern BOOL Rwuen;
 extern BOOL Selfpwr;
 
-#define VR_NAKALL_ON    0xD0
-#define VR_NAKALL_OFF   0xD1
+extern void* GetStringDescriptor(unsigned char StrIdx);
 
 // this table is used by the epcs macro
 const char __code  EPCS_Offset_Lookup_Table[] =
@@ -27,80 +26,14 @@ const char __code  EPCS_Offset_Lookup_Table[] =
 // macro for generating the address of an endpoint's control and status register (EPnCS)
 #define epcs(EP) (EPCS_Offset_Lookup_Table[(EP & 0x7E) | (EP > 128)] + 0xE6A1)
 
-BYTE Configuration; // Current configuration
-BYTE AlternateSetting; // Alternate settings
-//-----------------------------------------------------------------------------
-// Device Request hooks
-//   The following hooks are called by the end point 0 device request parser.
-//-----------------------------------------------------------------------------
+extern BYTE Configuration; // Current configuration
+extern BYTE AlternateSetting; // Alternate settings
 
-BOOL DR_GetDescriptor(void) {
-	return (TRUE);
-}
+#define SAVE_A_FEW_BYTES
 
-BOOL DR_SetConfiguration(void) // Called when a Set Configuration command is received
-{
-	Configuration = SETUPDAT[2];
-	return (TRUE); // Handled by user code
-}
-
-BOOL DR_GetConfiguration(void) // Called when a Get Configuration command is received
-{
-	EP0BUF[0] = Configuration;
-	EP0BCH = 0;
-	EP0BCL = 1;
-	return (TRUE); // Handled by user code
-}
-
-BOOL DR_SetInterface(void) // Called when a Set Interface command is received
-{
-	AlternateSetting = SETUPDAT[2];
-	return (TRUE); // Handled by user code
-}
-
-BOOL DR_GetInterface(void) // Called when a Set Interface command is received
-{
-	EP0BUF[0] = AlternateSetting;
-	EP0BCH = 0;
-	EP0BCL = 1;
-	return (TRUE); // Handled by user code
-}
-
-BOOL DR_GetStatus(void) {
-	return (TRUE);
-}
-
-BOOL DR_ClearFeature(void) {
-	return (TRUE);
-}
-
-BOOL DR_SetFeature(void) {
-	return (TRUE);
-}
-
-BOOL DR_VendorCmnd(void) {
-	BYTE tmp;
-
-	switch (SETUPDAT[1])
-	{
-		case VR_NAKALL_ON:
-			tmp = FIFORESET;
-			tmp |= bmNAKALL;
-			SYNCDELAY;
-			FIFORESET = tmp;
-			break;
-		case VR_NAKALL_OFF:
-			tmp = FIFORESET;
-			tmp &= ~bmNAKALL;
-			SYNCDELAY;
-			FIFORESET = tmp;
-			break;
-		default:
-			return (TRUE);
-	}
-	return (FALSE);
-}
-
+#ifdef SAVE_A_FEW_BYTES
+#define HighSpeedCapable() !(GPCR2 & bmFULLSPEEDONLY)
+#else
 BOOL HighSpeedCapable()
 {
    // this function determines if the chip is high-speed capable.
@@ -112,6 +45,17 @@ BOOL HighSpeedCapable()
    else
       return TRUE;
 }
+#endif
+
+extern BOOL DR_GetDescriptor(void);
+extern BOOL DR_SetConfiguration(void);
+extern BOOL DR_GetConfiguration(void);
+extern BOOL DR_SetInterface(void);
+extern BOOL DR_GetInterface(void);
+extern BOOL DR_GetStatus(void);
+extern BOOL DR_ClearFeature(void);
+extern BOOL DR_SetFeature(void);
+extern BOOL DR_VendorCmnd(void);
 
 void SetupCommand(void)
 {
@@ -149,7 +93,7 @@ void SetupCommand(void)
                   SUDPTRL = LSB(pOtherConfigDscr);
                   break;
                case GD_STRING:            // String
-                  if( (dscr_ptr = GetStringDescriptorEx(SETUPDAT[2])) != 0)
+                  if( (dscr_ptr = GetStringDescriptor(SETUPDAT[2])) != 0)
                   {
                      SUDPTRH = MSB(dscr_ptr);
                      SUDPTRL = LSB(dscr_ptr);

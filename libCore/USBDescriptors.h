@@ -11,7 +11,7 @@ typedef struct
 typedef struct            // Device Descriptor
 {
 	BYTE   length;         // Descriptor length ( = sizeof(DEVICEDSCR) )
-	BYTE   type;         // Decriptor type (Device = 1)
+	BYTE   type;         // Descriptor type (Device = 1)
 	BYTE   spec_ver_minor;   // Specification Version (BCD) minor
 	BYTE   spec_ver_major;   // Specification Version (BCD) major
 	BYTE   dev_class;      // Device class
@@ -30,7 +30,7 @@ typedef struct            // Device Descriptor
 typedef struct            // Device Qualifier Descriptor
 {
 	BYTE   length;         // Descriptor length ( = sizeof(DEVICEQUALDSCR) )
-	BYTE   type;         // Decriptor type (Device Qualifier = 6)
+	BYTE   type;         // Descriptor type (Device Qualifier = 6)
 	BYTE   spec_ver_minor;   // Specification Version (BCD) minor
 	BYTE   spec_ver_major;   // Specification Version (BCD) major
 	BYTE   dev_class;      // Device class
@@ -99,7 +99,5 @@ extern __code CONFIGDSCR        FullSpeedConfigDscr;
 extern __code STRINGDSCR        StringDscr;
 extern __code DSCR              UserDscr;
 */
-
-void* GetStringDescriptorEx(unsigned char StrIdx);
 
 #endif /* USBDESCRIPTORS_H_ */
