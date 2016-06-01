@@ -26,3 +26,15 @@ void SetLEDState(unsigned char index, char state)
 		IOA |= (0x1 << index); // set the bit
 #endif
 }
+
+char GetLEDState(unsigned char index)
+{
+    if (index >= 4)
+        return 0;
+
+#ifdef ACTIVE_LOW
+    return (IOA & (0x1 << index)) ? 0 : 1;
+#else
+    return (IOA & (0x1 << index)) ? 1 : 0;
+#endif
+}
