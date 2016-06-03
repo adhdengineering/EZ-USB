@@ -50,7 +50,7 @@ typedef struct
 #define Product_Addr (Manufacturer_Addr + MAKE_STRINGDSCR_LEN("Cypress"))
 #define SerialNo_Addr (Product_Addr + MAKE_STRINGDSCR_LEN("EZ-USB"))
 
-#define USE_CYPRESS_VID_PID
+#define USE_CYPRESS_VID_PID 1
 
 const DEVICEDSCR __at(DeviceDscr_Addr) DeviceDscr =
 {
@@ -62,7 +62,7 @@ const DEVICEDSCR __at(DeviceDscr_Addr) DeviceDscr =
 		.sub_class = 0x00, // Device sub-class
 		.protocol = 0x00, // Device sub-sub-class
 		.max_packet = 64,  // Maximum packet size
-#ifdef USE_CYPRESS_VID_PID
+#if USE_CYPRESS_VID_PID == 1
 		.vendor_id = 0x04B4, // Vendor ID
         .product_id = 0x8613, //Product ID (Sample Device)
 #else
