@@ -3,12 +3,13 @@
 #include "syncdly.h"            // SYNCDELAY macro
 
 #include "USBDescriptors.h"
+#include "USBSetup.h"
 #include "i2c.h"
 
 extern BOOL Rwuen;
 extern BOOL Selfpwr;
-
-extern void* GetStringDescriptor(unsigned char StrIdx);
+BYTE Configuration; // Current configuration
+BYTE AlternateSetting; // Alternate settings
 
 // this table is used by the epcs macro
 const char __code  EPCS_Offset_Lookup_Table[] =
@@ -27,40 +28,34 @@ const char __code  EPCS_Offset_Lookup_Table[] =
 // macro for generating the address of an endpoint's control and status register (EPnCS)
 #define epcs(EP) (EPCS_Offset_Lookup_Table[(EP & 0x7E) | (EP > 128)] + 0xE6A1)
 
-#define SAVE_A_FEW_BYTES
-
-#ifdef SAVE_A_FEW_BYTES
-#define HighSpeedCapable() !(GPCR2 & bmFULLSPEEDONLY)
-#else
-BOOL HighSpeedCapable()
+// this function determines if the chip is high-speed capable.
+// FX2 and FX2LP are high-speed capable. FX1 is not - it does
+// not have a high-speed transceiver.
+inline BOOL HighSpeedCapable()
 {
-   // this function determines if the chip is high-speed capable.
-   // FX2 and FX2LP are high-speed capable. FX1 is not - it does
-   // not have a high-speed transceiver.
-
    if (GPCR2 & bmFULLSPEEDONLY)
       return FALSE;
    else
       return TRUE;
 }
-#endif
 
-extern BOOL DR_GetDescriptor(void);
-extern BOOL DR_SetConfiguration(void);
-extern BOOL DR_GetConfiguration(void);
-extern BOOL DR_SetInterface(void);
-extern BOOL DR_GetInterface(void);
-extern BOOL DR_GetStatus(void);
-extern BOOL DR_ClearFeature(void);
-extern BOOL DR_SetFeature(void);
-extern BOOL DR_VendorCmnd(void);
+
+USBSetupCallback GetDescriptor = DefaultGetDescriptor;
+USBSetupCallback SetConfiguration = DefaultSetConfiguration;
+USBSetupCallback GetConfiguration = DefaultGetConfiguration;
+USBSetupCallback SetInterface = DefaultSetInterface;
+USBSetupCallback GetInterface = DefaultGetInterface;
+USBSetupCallback GetStatus = DefaultGetStatus;
+USBSetupCallback ClearFeature = DefaultClearFeature;
+USBSetupCallback SetFeature = DefaultSetFeature;
+USBSetupCallback VendorCmnd = DefaultVendorCmnd;
 
 void HandleSetupPacket();
 void SetupCommand(void)
 {
    if ((SETUPDAT[0] & SETUP_VENDOR_REQUEST) == SETUP_VENDOR_REQUEST)
    {
-       if(DR_VendorCmnd()){
+       if(!VendorCmnd()){
           EZUSB_STALL_EP0();            // Stall End Point 0
        }
    }
@@ -78,7 +73,7 @@ void HandleSetupPacket()
     switch(SETUPDAT[1])
     {
        case SC_GET_DESCRIPTOR:                  // *** Get Descriptor
-          if(DR_GetDescriptor())
+          if(GetDescriptor())
              switch(SETUPDAT[3])
              {
                 case GD_DEVICE:            // Device
@@ -120,19 +115,19 @@ void HandleSetupPacket()
              }
           break;
        case SC_GET_INTERFACE:                  // *** Get Interface
-          DR_GetInterface();
+           GetInterface();
           break;
        case SC_SET_INTERFACE:                  // *** Set Interface
-          DR_SetInterface();
+           SetInterface();
           break;
        case SC_SET_CONFIGURATION:               // *** Set Configuration
-          DR_SetConfiguration();
+           SetConfiguration();
           break;
        case SC_GET_CONFIGURATION:               // *** Get Configuration
-          DR_GetConfiguration();
+           GetConfiguration();
           break;
        case SC_GET_STATUS:                  // *** Get Status
-          if(DR_GetStatus())
+          if(GetStatus())
              switch(SETUPDAT[0])
              {
                 case GS_DEVICE:            // Device
@@ -158,7 +153,7 @@ void HandleSetupPacket()
              }
           break;
        case SC_CLEAR_FEATURE:                  // *** Clear Feature
-          if(DR_ClearFeature())
+          if(ClearFeature())
              switch(SETUPDAT[0])
              {
                 case FT_DEVICE:            // Device
@@ -179,7 +174,7 @@ void HandleSetupPacket()
              }
           break;
        case SC_SET_FEATURE:                  // *** Set Feature
-          if(DR_SetFeature())
+          if(SetFeature())
              switch(SETUPDAT[0])
              {
                 case FT_DEVICE:            // Device
@@ -203,9 +198,67 @@ void HandleSetupPacket()
              }
           break;
        default:                     // *** Invalid Command
-          if(DR_VendorCmnd())
-             EZUSB_STALL_EP0();            // Stall End Point 0
+          EZUSB_STALL_EP0();            // Stall End Point 0
           break;
     }
 
+}
+
+/// Called when a Get Descriptor command is received
+BOOL DefaultGetDescriptor(void)
+{
+    return (TRUE);
+}
+
+/// Called when a Set Configuration command is received
+BOOL DefaultSetConfiguration(void)
+{
+    Configuration = SETUPDAT[2];
+    return (TRUE); // Handled by user code
+}
+
+/// Called when a Get Configuration command is received
+BOOL DefaultGetConfiguration(void)
+{
+    EP0BUF[0] = Configuration;
+    EP0BCH = 0;
+    EP0BCL = 1;
+    return (TRUE); // Handled by user code
+}
+
+/// Called when a Set Interface command is received
+BOOL DefaultSetInterface(void)
+{
+    AlternateSetting = SETUPDAT[2];
+    return (TRUE); // Handled by user code
+}
+
+/// Called when a Set Interface command is received
+BOOL DefaultGetInterface(void)
+{
+    EP0BUF[0] = AlternateSetting;
+    EP0BCH = 0;
+    EP0BCL = 1;
+    return (TRUE); // Handled by user code
+}
+
+BOOL DefaultGetStatus(void)
+{
+    return (TRUE);
+}
+
+BOOL DefaultClearFeature(void)
+{
+    return (TRUE);
+}
+
+BOOL DefaultSetFeature(void)
+{
+    return (TRUE);
+}
+#include "i2c.h"
+BOOL DefaultVendorCmnd(void)
+{
+    i2c_print_string(0x8, "default\n");
+    return (FALSE);
 }

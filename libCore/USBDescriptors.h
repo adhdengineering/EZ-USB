@@ -83,6 +83,7 @@ typedef struct
 	BYTE   type;         // Descriptor type
 }STRINGDSCR;
 
+extern void* GetStringDescriptor(unsigned char StrIdx);
 
 extern WORD   pDeviceDscr;
 extern WORD   pDeviceQualDscr;

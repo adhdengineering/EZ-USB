@@ -10,6 +10,8 @@
 #include "LEDs.h"
 #include "i2c.h"
 
+extern BOOL OnVendorCmnd(void);
+
 void ProcessEP1Out()
 {
 	WORD i;
@@ -43,6 +45,7 @@ BOOL TD_Resume(void) // Called after the device resumes
 // Same as the USBJumpTable.asm file.
 void main(void)
 {
+    VendorCmnd = OnVendorCmnd;
 	InitUSB();
 	SetupLEDs();
 
