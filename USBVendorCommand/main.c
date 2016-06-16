@@ -4,7 +4,7 @@
 
 #include <USB.h>
 #include <delay.h>
-#include <USBsetup.h>
+#include "USBsetup.h"
 #include <SuspendResume.h>
 
 #include "LEDs.h"
