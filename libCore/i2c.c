@@ -3,14 +3,15 @@
 #include "syncdly.h"          // SYNCDELAY macro
 
 #include "i2c.h"
-unsigned char get_nibble_as_hex(unsigned char nibble);
-unsigned char i2c_write_address_to_device(unsigned char device, unsigned short addr);
-unsigned char i2c_write_byte(unsigned char data);
-unsigned char i2c_read_byte(unsigned char *data);
+
+char get_nibble_as_hex(unsigned char nibble);
+i2c_error i2c_write_address_to_device(unsigned char device, unsigned short addr);
+i2c_error i2c_write_byte(unsigned char data);
+i2c_error i2c_read_byte(unsigned char *data);
 void i2c_stop();
 
 
-unsigned char i2c_print_byte_as_hex(unsigned char addr, unsigned char byte)
+i2c_error i2c_print_byte_as_hex(unsigned char addr, unsigned char byte)
 {
     char temp[3];
     temp[0] = get_nibble_as_hex(byte >> 4);
@@ -19,7 +20,7 @@ unsigned char i2c_print_byte_as_hex(unsigned char addr, unsigned char byte)
     return i2c_print_string(addr, temp);
 }
 
-unsigned char get_nibble_as_hex(unsigned char nibble)
+char get_nibble_as_hex(unsigned char nibble)
 {
     nibble &= 0xf;
     if (nibble <= 9) return '0' + nibble;
@@ -27,7 +28,7 @@ unsigned char get_nibble_as_hex(unsigned char nibble)
     return 'x';
 }
 
-unsigned char i2c_print_string(unsigned char addr, char* str)
+i2c_error i2c_print_string(unsigned char addr, char* str)
 {
     while (I2CS & bmSTOP);
 
@@ -52,7 +53,7 @@ unsigned char i2c_print_string(unsigned char addr, char* str)
     return 1;
 }
 
-unsigned char i2c_write(unsigned char device, unsigned short addr, unsigned char* data, unsigned char len)
+i2c_error i2c_write(unsigned char device, unsigned short addr, unsigned char* data, unsigned char len)
 {
     unsigned char ret = 1;
     while (I2CS & bmSTOP);
@@ -74,25 +75,25 @@ unsigned char i2c_write(unsigned char device, unsigned short addr, unsigned char
     return ret;
 }
 
-unsigned char i2c_read(unsigned char device, unsigned short addr, unsigned char* dst, unsigned char len)
+i2c_error i2c_read(unsigned char device, unsigned short addr, unsigned char* dst, unsigned char len)
 {
-    unsigned char ret = 1;
+    i2c_error ret = i2c_ok;
     while (I2CS & bmSTOP);
 
     do
     {
-        if (i2c_write_address_to_device(device, addr) == 0) { ret = 0; break; }
+        if ((ret = i2c_write_address_to_device(device, addr)) != i2c_ok) {  break; }
 
         I2CS |= bmSTART;
         I2DAT = (device << 1) | 0x01;
         while (!(I2CS & bmDONE));
-        if (I2CS & bmBERR) return 0;
-        if ((I2CS & bmACK) == 0) break;
+        if (I2CS & bmBERR) return i2c_error_flag;
+        if ((I2CS & bmACK) == 0) { ret = i2c_no_device_read_ack; break; }
 
         *dst = I2DAT;
         while (len)
         {
-            if (i2c_read_byte(dst++) == 0) { ret = 0; break; }
+            if ((ret = i2c_read_byte(dst++)) != i2c_ok) { break; }
             len--;
         };
     } while(0);
@@ -102,36 +103,37 @@ unsigned char i2c_read(unsigned char device, unsigned short addr, unsigned char*
     return ret;
 }
 
-unsigned char i2c_write_address_to_device(unsigned char device, unsigned short addr)
+i2c_error i2c_write_address_to_device(unsigned char device, unsigned short addr)
 {
+    i2c_error ret = i2c_ok;
     I2CS |= bmSTART;
     I2DAT = device << 1;
 
     while (!(I2CS & bmDONE));
-    if (I2CS & bmBERR) return 0;
-    if ((I2CS & bmACK) == 0) return 0;
+    if (I2CS & bmBERR) return i2c_error_flag;
+    if ((I2CS & bmACK) == 0) return i2c_no_device_write_ack;
 
-    if (i2c_write_byte(addr & 0xff) == 0) return 0;
-    if (i2c_write_byte((addr >> 8) & 0xff) == 0) return 0;
+    if ((ret = i2c_write_byte(addr & 0xff)) != i2c_ok) return ret;
+    if ((ret = i2c_write_byte((addr >> 8) & 0xff)) != i2c_ok) return ret;
 
-    return 1;
+    return i2c_ok;
 }
 
-unsigned char i2c_write_byte(unsigned char data)
+i2c_error i2c_write_byte(unsigned char data)
 {
     I2DAT = data;
     while (!(I2CS & bmDONE));
-    if (I2CS & bmBERR) return 0;
-    if ((I2CS & bmACK) == 0) return 0;
-    return 1;
+    if (I2CS & bmBERR) return i2c_error_flag;
+    if ((I2CS & bmACK) == 0) return i2c_no_ack;
+    return i2c_ok;
 }
 
-unsigned char i2c_read_byte(unsigned char *data)
+i2c_error i2c_read_byte(unsigned char *data)
 {
     while (!(I2CS & bmDONE));
-    if (I2CS & bmBERR) return 0;
+    if (I2CS & bmBERR) return i2c_error_flag;
     *data = I2DAT;
-    return 1;
+    return i2c_ok;
 }
 
 void i2c_stop()

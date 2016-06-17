@@ -51,7 +51,7 @@ void main(void)
 
 	if (i2c_print_string(0x8, "Testing\n") == 1)
 	{
-	    SetLEDState(0, 1);
+	    SetLEDState(0, 0);
 	    SetLEDState(1, 1);
 	}
 	else {

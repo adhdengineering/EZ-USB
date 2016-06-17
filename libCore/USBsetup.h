@@ -21,4 +21,21 @@ extern USBSetupCallback ClearFeature;
 extern USBSetupCallback SetFeature;
 extern USBSetupCallback VendorCmnd;
 
+enum SetupDirection { SetupDirectionDevice=0, SetupDirectionHost=1 };
+enum SetupType { SetupTypeStandard=0, SetupTypeClass=1, SetupTypeVendor=2, SetupTypeReserved=3 };
+enum SetupRecipient { SetupRecipientDevice=0, SetupRecipientInterface=1, SetupRecipientEndpoint=2, SetupRecipientOther=3, SetupRecipientReserved=31 };
+
+typedef struct __SetupPacket
+{
+    enum SetupRecipient recipient : 5;
+    enum SetupType type : 2;
+    enum SetupDirection direction : 1;
+    unsigned char bRequest;
+    unsigned short wValue;
+    unsigned short wIndex;
+    unsigned short wLength;
+} _SetupPacket,*_PSetupPacket;
+
+volatile __xdata __at (0xE6B8) volatile _SetupPacket SetupPacket;
+
 #endif /* SETUP_H_ */

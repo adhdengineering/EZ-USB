@@ -3,6 +3,7 @@
 #include <syncdly.h>
 
 #include <i2c.h>
+#include <USBSetup.h>
 #include "LEDs.h"
 
 #define LED_VENDOR_REQUEST 0x01
@@ -10,25 +11,9 @@
 
 void TriggerEP0Buffer();
 
-enum SetupDirection { SetupDirectionDevice=0, SetupDirectionHost=1 };
-enum SetupType { SetupTypeStandard=0, SetupTypeClass=1, SetupTypeVendor=2, SetupTypeReserved=3 };
-enum SetupRecipient { SetupRecipientDevice=0, SetupRecipientInterface=1, SetupRecipientEndpoint=2, SetupRecipientOther=3, SetupRecipientReserved=31 };
-
-typedef struct __SetupPacket
-{
-    enum SetupRecipient recipient : 5;
-    enum SetupType type : 2;
-    enum SetupDirection direction : 1;
-    unsigned char bRequest;
-    unsigned short wValue;
-    unsigned short wIndex;
-    unsigned short wLength;
-} _SetupPacket,*_PSetupPacket;
-
-volatile __xdata __at (0xE6B8) volatile _SetupPacket SetupPacket;
-
 BOOL OnVendorCmnd(void)
 {
+    i2c_error i2cerr = i2c_ok;
     switch (SetupPacket.bRequest)
     {
         case LED_VENDOR_REQUEST:
@@ -47,19 +32,43 @@ BOOL OnVendorCmnd(void)
         case I2C_VENDOR_REQUEST:
             if (SetupPacket.direction == SetupDirectionHost)
             {
-                i2c_print_byte_as_hex(0x08, SetupPacket.wLength);
-                if (i2c_read(SetupPacket.wValue, SetupPacket.wIndex, EP0BUF, SetupPacket.wLength))
+                SetLEDState(0, 0);
+                SetLEDState(1, 0);
+                if ((i2cerr = i2c_read(SetupPacket.wValue, SetupPacket.wIndex, EP0BUF, SetupPacket.wLength)) == i2c_ok)
                 {
                     EP0BCH = 0;
                     EP0BCL = SetupPacket.wLength;
                     return TRUE;
                 }
-                else { return FALSE; }
+                else
+                {
+                    switch (i2cerr)
+                    {
+                    case i2c_no_device_write_ack:
+                        SetLEDState(0, 1);
+                        SetLEDState(1, 1);
+                        break;
+                    case i2c_no_device_read_ack:
+                        SetLEDState(0, 1);
+                        SetLEDState(1, 0);
+                        break;
+                    case i2c_no_ack:
+                        SetLEDState(0, 0);
+                        SetLEDState(1, 1);
+                        break;
+                    default:
+                        SetLEDState(0, 0);
+                        SetLEDState(1, 0);
+                        break;
+                    }
+                    return FALSE;
+                }
             }
             else
             {
                 TriggerEP0Buffer();
-                return i2c_write(SetupPacket.wValue, SetupPacket.wIndex, EP0BUF, SetupPacket.wLength);
+                i2cerr = i2c_write(SetupPacket.wValue, SetupPacket.wIndex, EP0BUF, SetupPacket.wLength);
+                return i2cerr == i2c_ok;
             }
         default:
             return (FALSE);
