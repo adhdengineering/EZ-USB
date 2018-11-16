@@ -8,7 +8,7 @@
 void SetupLEDs()
 {
 	OEA = 0xf;
-	IOA = 0x0;
+	IOA &= 0xF0;
 }
 void SetLEDState(unsigned char index, char state)
 {

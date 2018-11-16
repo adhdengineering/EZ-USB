@@ -259,6 +259,8 @@ BOOL DefaultSetFeature(void)
 #include "i2c.h"
 BOOL DefaultVendorCmnd(void)
 {
+#ifdef _DEBUG
     i2c_print_string(0x8, "default\n");
+#endif
     return (FALSE);
 }

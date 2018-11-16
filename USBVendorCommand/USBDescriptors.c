@@ -20,11 +20,13 @@
 #define ET_BULK    2
 #define ET_INT     3
 
+#define NUM_ENDPOINTS 2
+
 typedef struct
 {
 	CONFIGDSCR ConfigDsc;
 	INTRFCDSCR InterfaceDescriptor;
-	ENDPNTDSCR EndPointDescriptors[2];
+	ENDPNTDSCR EndPointDescriptors[NUM_ENDPOINTS];
 }CONFIGANDINTERFACEDSCR;
 
 typedef short wchar_t;
@@ -34,6 +36,7 @@ typedef struct
     wchar_t strData[];
 }STRING;
 
+//#define USE_CYPRESS_VID_PID
 
 #define START_ADDRESS 0x0400
 // Makes a string descriptor length from a string. takes away 2 because the string will be null terminated but
@@ -47,10 +50,14 @@ typedef struct
 #define FullSpeedConfigDscr_Addr MAKE_EVEN_ALIGNED_START(HighSpeedConfigDscr_Addr, CONFIGANDINTERFACEDSCR)
 #define LanguageID_Addr MAKE_EVEN_ALIGNED_START(FullSpeedConfigDscr_Addr, CONFIGANDINTERFACEDSCR)
 #define Manufacturer_Addr (LanguageID_Addr + MAKE_STRINGDSCR_LEN("a"))
+#ifdef USE_CYPRESS_VID_PID
 #define Product_Addr (Manufacturer_Addr + MAKE_STRINGDSCR_LEN("Cypress"))
+#else
+#define Product_Addr (Manufacturer_Addr + MAKE_STRINGDSCR_LEN("ADHD-Engineering"))
+#endif
 #define SerialNo_Addr (Product_Addr + MAKE_STRINGDSCR_LEN("EZ-USB"))
 
-#define USE_CYPRESS_VID_PID 1
+//#define USE_CYPRESS_VID_PID
 
 const DEVICEDSCR __at(DeviceDscr_Addr) DeviceDscr =
 {
@@ -62,14 +69,14 @@ const DEVICEDSCR __at(DeviceDscr_Addr) DeviceDscr =
 		.sub_class = 0x00, // Device sub-class
 		.protocol = 0x00, // Device sub-sub-class
 		.max_packet = 64,  // Maximum packet size
-#if USE_CYPRESS_VID_PID == 1
+#ifdef USE_CYPRESS_VID_PID
 		.vendor_id = 0x04B4, // Vendor ID
         .product_id = 0x8613, //Product ID (Sample Device)
 #else
         .vendor_id = 0x1337, // Vendor ID
         .product_id = 0x1234, //Product ID (Sample Device)
 #endif
-		.version_id = 0x0000, //Product version ID
+		.version_id = 0x0201, //Product version ID
 		.mfg_str = 1, // Manufacturer string index
 		.prod_str = 2, // Product string index
 		.serialnum_str = 3, // Serial number string index
@@ -109,7 +116,7 @@ const CONFIGANDINTERFACEDSCR __at(HighSpeedConfigDscr_Addr) HighSpeedConfigDscr 
 		.type = DSCR_INTRFC,         // Descriptor type (Interface = 4)
 		.index = 0,         // Zero-based index of this interface
 		.alt_setting = 0,   // Alternate setting
-		.ep_cnt = 2,         // Number of end points
+		.ep_cnt = NUM_ENDPOINTS,         // Number of end points
 		.class = 0xff,         // Interface class
 		.sub_class = 0,      // Interface sub class
 		.protocol = 0,      // Interface sub sub class
@@ -120,7 +127,7 @@ const CONFIGANDINTERFACEDSCR __at(HighSpeedConfigDscr_Addr) HighSpeedConfigDscr 
 		{
 			.length = sizeof(ENDPNTDSCR),         // End point descriptor length ( = sizeof(ENDPNTDSCR) )
 			.type = DSCR_ENDPNT,         // Descriptor type (End point = 5)
-			.addr = 0x1,         // End point address
+			.addr = 0x2,         // End point address
 			.ep_type = ET_BULK,      // End point type
 			.mp_L = 0x40,         // Maximum packet size
 			.mp_H = 0x0,
@@ -129,7 +136,7 @@ const CONFIGANDINTERFACEDSCR __at(HighSpeedConfigDscr_Addr) HighSpeedConfigDscr 
 		{
 			.length = sizeof(ENDPNTDSCR),         // End point descriptor length ( = sizeof(ENDPNTDSCR) )
 			.type = DSCR_ENDPNT,         // Descriptor type (End point = 5)
-			.addr = 0x81,         // End point address
+			.addr = 0x84,         // End point address
 			.ep_type = ET_BULK,      // End point type
 			.mp_L = 0x40,         // Maximum packet size
 			.mp_H = 0x0,
@@ -157,7 +164,7 @@ const CONFIGANDINTERFACEDSCR __at(FullSpeedConfigDscr_Addr) FullSpeedConfigDscr 
 		.type = DSCR_INTRFC,         // Descriptor type (Interface = 4)
 		.index = 0,         // Zero-based index of this interface
 		.alt_setting = 0,   // Alternate setting
-		.ep_cnt = 2,         // Number of end points
+		.ep_cnt = NUM_ENDPOINTS,         // Number of end points
 		.class = 0xff,         // Interface class
 		.sub_class = 0,      // Interface sub class
 		.protocol = 0,      // Interface sub sub class
@@ -168,7 +175,7 @@ const CONFIGANDINTERFACEDSCR __at(FullSpeedConfigDscr_Addr) FullSpeedConfigDscr 
 		{
 			.length = sizeof(ENDPNTDSCR),         // End point descriptor length ( = sizeof(ENDPNTDSCR) )
 			.type = DSCR_ENDPNT,         // Descriptor type (End point = 5)
-			.addr = 0x1,         // End point address
+			.addr = 0x2,         // End point address
 			.ep_type = ET_BULK,      // End point type
 			.mp_L = 0x40,         // Maximum packet size
 			.mp_H = 0x0,
@@ -177,7 +184,7 @@ const CONFIGANDINTERFACEDSCR __at(FullSpeedConfigDscr_Addr) FullSpeedConfigDscr 
 		{
 			.length = sizeof(ENDPNTDSCR),         // End point descriptor length ( = sizeof(ENDPNTDSCR) )
 			.type = DSCR_ENDPNT,         // Descriptor type (End point = 5)
-			.addr = 0x81,         // End point address
+			.addr = 0x84,         // End point address
 			.ep_type = ET_BULK,      // End point type
 			.mp_L = 0x40,         // Maximum packet size
 			.mp_H = 0x0,
@@ -197,6 +204,7 @@ const STRING __at(LanguageID_Addr) LanguageID =
 	.strData = { 0x0409 },
 };
 
+#ifdef USE_CYPRESS_VID_PID
 const STRING __at(Manufacturer_Addr) Manufacturer =
 {
 	.StringDesciptor =
@@ -206,6 +214,17 @@ const STRING __at(Manufacturer_Addr) Manufacturer =
 	},
 	.strData = { 'C', 'y', 'p', 'r', 'e', 's', 's' },
 };
+#else
+const STRING __at(Manufacturer_Addr) Manufacturer =
+{
+    .StringDesciptor =
+    {
+        .length = MAKE_STRINGDSCR_LEN("ADHD-Engineering"),
+        .type = DSCR_STRING,
+    },
+    .strData = { 'A', 'D', 'H', 'D', '-', 'E', 'n', 'g', 'i', 'n', 'e', 'e', 'r', 'i', 'n', 'g' },
+};
+#endif
 
 const STRING __at(Product_Addr) Product =
 {
@@ -224,7 +243,7 @@ const STRING __at(SerialNo_Addr) SerialNo =
 		.length = MAKE_STRINGDSCR_LEN("12345"),
 		.type = DSCR_STRING,
 	},
-	.strData = { '1', '2', '3', '4', '5' },
+	.strData = { '5', '2', '3', '4', '5' },
 };
 
 // if there are more string descriptors then i can be more efficient in terms of

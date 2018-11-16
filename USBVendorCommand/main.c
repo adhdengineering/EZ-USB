@@ -39,6 +39,7 @@ BOOL TD_Resume(void) // Called after the device resumes
 {
 	return (TRUE);
 }
+volatile long dataSize = 10;
 
 // I'd like to move main into the core library, but it has to remain in the target project
 // for now. I can't get the linker to include it in the output if it's in the library.
@@ -48,16 +49,6 @@ void main(void)
     VendorCmnd = OnVendorCmnd;
 	InitUSB();
 	SetupLEDs();
-
-	if (i2c_print_string(0x8, "Testing\n") == 1)
-	{
-	    SetLEDState(0, 0);
-	    SetLEDState(1, 1);
-	}
-	else {
-	    SetLEDState(0, 0);
-	    SetLEDState(1, 0);
-	}
 
 	while (1)
 	{

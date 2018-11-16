@@ -25,7 +25,7 @@
 								<inputType id="cdt.managedbuild.tool.sdcc.c.compiler.input.377826271" superClass="cdt.managedbuild.tool.sdcc.c.compiler.input"/>
 							</tool>
 							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} -llibCore ${INPUTS}" id="cdt.managedbuild.tool.sdcc.c.linker.exe.release.2005868006" name="SDCC Linker" superClass="cdt.managedbuild.tool.sdcc.c.linker.exe.release">
-								<option id="sdcc.c.link.option.libs.176301092" name="Libraries (-l)" superClass="sdcc.c.link.option.libs" valueType="libs"/>
+								<option id="sdcc.c.link.option.libs.176301092" name="Libraries (-l)" superClass="sdcc.c.link.option.libs"/>
 								<option id="sdcc.c.link.option.paths.1018520930" name="Library search path (-L)" superClass="sdcc.c.link.option.paths" valueType="stringList">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libCore/Release}&quot;"/>
 								</option>

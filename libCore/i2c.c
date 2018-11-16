@@ -130,8 +130,9 @@ i2c_error i2c_write_address_to_device(unsigned char device, unsigned char addr)
     if (I2CS & bmBERR) return i2c_error_flag;
     if ((I2CS & bmACK) == 0) return i2c_no_device_write_address_ack;
 
-    if ((ret = i2c_write_byte(addr)) != i2c_ok) return ret;
-
+    if (addr != 0) {
+        if ((ret = i2c_write_byte(addr)) != i2c_ok) return ret;
+    }
     return i2c_ok;
 }
 

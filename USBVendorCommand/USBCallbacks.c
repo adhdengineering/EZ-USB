@@ -32,37 +32,16 @@ BOOL OnVendorCmnd(void)
         case I2C_VENDOR_REQUEST:
             if (SetupPacket.direction == SetupDirectionHost)
             {
-                SetLEDState(0, 0);
-                SetLEDState(1, 0);
                 if ((i2cerr = i2c_read(SetupPacket.wValue, SetupPacket.wIndex, EP0BUF, SetupPacket.wLength)) == i2c_ok)
                 {
-                    EP0BCH = 0;
-                    EP0BCL = SetupPacket.wLength;
-                    return TRUE;
                 }
                 else
                 {
-                    switch (i2cerr)
-                    {
-                    case i2c_no_device_write_ack:
-                        SetLEDState(0, 1);
-                        SetLEDState(1, 1);
-                        break;
-                    case i2c_no_device_read_ack:
-                        SetLEDState(0, 1);
-                        SetLEDState(1, 0);
-                        break;
-                    case i2c_no_ack:
-                        SetLEDState(0, 0);
-                        SetLEDState(1, 1);
-                        break;
-                    default:
-                        SetLEDState(0, 0);
-                        SetLEDState(1, 0);
-                        break;
-                    }
-                    return FALSE;
+                    EP0BUF[0] = i2cerr;
                 }
+                EP0BCH = 0;
+                EP0BCL = SetupPacket.wLength;
+                return TRUE;
             }
             else
             {

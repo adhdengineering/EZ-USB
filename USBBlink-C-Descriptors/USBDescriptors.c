@@ -49,6 +49,12 @@ typedef struct
 #define Product_Addr (Manufacturer_Addr + MAKE_STRINGDSCR_LEN("Cypress"))
 #define SerialNo_Addr (Product_Addr + MAKE_STRINGDSCR_LEN("EZ-USB"))
 
+WORD pDeviceDscr = DeviceDscr_Addr;
+WORD pDeviceQualDscr = DeviceQualDscr_Addr;
+WORD pHighSpeedConfigDscr = HighSpeedConfigDscr_Addr;
+WORD pFullSpeedConfigDscr = FullSpeedConfigDscr_Addr;
+WORD pConfigDscr;
+WORD pOtherConfigDscr;
 
 const DEVICEDSCR __at(DeviceDscr_Addr) DeviceDscr =
 {

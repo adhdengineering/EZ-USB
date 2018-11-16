@@ -287,22 +287,7 @@
  // Globals
  //-----------------------------------------------------------------------------
  extern __code BYTE   USB_AutoVector;
- 
- extern WORD   pDeviceDscr;
- extern WORD   pDeviceQualDscr;
- extern WORD	  pHighSpeedConfigDscr;
- extern WORD	  pFullSpeedConfigDscr;	
- extern WORD   pConfigDscr;
- extern WORD   pOtherConfigDscr;
- extern WORD   pStringDscr;
- /*
- extern __code DEVICEDSCR        DeviceDscr;
- extern __code DEVICEQUALDSCR    DeviceQualDscr;
- extern __code CONFIGDSCR        HighSpeedConfigDscr;
- extern __code CONFIGDSCR        FullSpeedConfigDscr;
- extern __code STRINGDSCR        StringDscr;
- extern __code DSCR              UserDscr;
- */
+
  extern I2CPCKT   I2CPckt;
  
  //-----------------------------------------------------------------------------

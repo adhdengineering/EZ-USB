@@ -5,6 +5,7 @@
 #include "syncdly.h"            // SYNCDELAY macro
 
 #include "USBsetup.h"
+#include "USBDescriptors.h"
 
 BOOL SetupDataAvailable;
 BOOL Sleep;

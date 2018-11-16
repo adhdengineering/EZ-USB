@@ -36,6 +36,7 @@ void InitUSB()
 
 	// set the CPU clock to 48MHz
 	CPUCS = ((CPUCS & ~bmCLKSPD) | bmCLKSPD1);
+	CPUCS |= bmCLKOE;
 
 	pDeviceDscr = (WORD)&DeviceDscr;
 	pDeviceQualDscr = (WORD)&DeviceQualDscr;

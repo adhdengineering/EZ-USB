@@ -6,24 +6,11 @@
 #include "LEDs.h"
 #include "USBsetup.h"
 #include "USBinterupts.h"
+#include "USBDescriptors.h"
 
-WORD   pDeviceDscr;   // Pointer to Device Descriptor; Descriptors may be moved
-WORD   pDeviceQualDscr;
-WORD   pHighSpeedConfigDscr;
-WORD   pFullSpeedConfigDscr;
-WORD   pConfigDscr;
-WORD   pOtherConfigDscr;
-WORD   pStringDscr;
 
 void EZUSB_Discon(BOOL renum);
 
-
-extern __code DEVICEDSCR        DeviceDscr;
-extern __code DEVICEQUALDSCR    DeviceQualDscr;
-extern __code CONFIGDSCR        HighSpeedConfigDscr;
-extern __code CONFIGDSCR        FullSpeedConfigDscr;
-extern __code STRINGDSCR        StringDscr;
-//extern __code DSCR              UserDscr;
 void InitUSB()
 {
 	SetupDataAvailable = FALSE;
@@ -32,12 +19,6 @@ void InitUSB()
 
 	// set the CPU clock to 48MHz
 	CPUCS = ((CPUCS & ~bmCLKSPD) | bmCLKSPD1);
-
-	pDeviceDscr = (WORD)&DeviceDscr;
-	pDeviceQualDscr = (WORD)&DeviceQualDscr;
-	pHighSpeedConfigDscr = (WORD)&HighSpeedConfigDscr;
-	pFullSpeedConfigDscr = (WORD)&FullSpeedConfigDscr;
-	pStringDscr = (WORD)&StringDscr;
 
 	EZUSB_IRQ_ENABLE();            // Enable USB interrupt (INT2)
 	EZUSB_ENABLE_RSMIRQ();            // Wake-up interrupt
